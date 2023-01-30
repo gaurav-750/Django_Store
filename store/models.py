@@ -4,6 +4,13 @@ from django.db import models
 # Create your models here.
 class Collection(models.Model):
     title = models.CharField(max_length=255)
+    featured_product = models.ForeignKey(
+        'Product', on_delete=models.SET_NULL, null=True, related_name='+')
+
+
+class Promotion(models.Model):
+    description = models.CharField(max_length=255)
+    discount = models.FloatField()
 
 
 class Product(models.Model):
@@ -15,6 +22,9 @@ class Product(models.Model):
 
     # *1-Many
     collection = models.ForeignKey(Collection, on_delete=models.PROTECT)
+
+    # many-many
+    promotions = models.ManyToManyField(Promotion)
 
 
 class Customer(models.Model):
