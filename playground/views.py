@@ -26,6 +26,11 @@ def say_hello(req):
     #     Q(inventory__lt=10) | Q(unit_price__lt=20))
 
     # *Products: inventory = unit_price
-    queryset = Product.objects.filter(inventory=F('unit_price'))
+    # queryset = Product.objects.filter(inventory=F('unit_price'))
+
+    queryset = Product.objects.order_by('title')
+    queryset = Product.objects.order_by('unit_price', '-title')
+
+    queryset = Product.objects.all()[0:5]
 
     return render(req, 'hello.html', {'name': 'Gaurav', 'result': list(queryset)})
