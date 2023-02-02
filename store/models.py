@@ -77,9 +77,9 @@ class Order(models.Model):
     PAYMENT_COMPLETED = 'C'
     PAYMENT_FAILED = 'F'
     PAYMENT_CHOICES = [
-        (PAYMENT_PENDING, 'P'),
-        (PAYMENT_COMPLETED, 'C'),
-        (PAYMENT_FAILED, 'F'),
+        (PAYMENT_PENDING, 'Pending'),
+        (PAYMENT_COMPLETED, 'Completed'),
+        (PAYMENT_FAILED, 'Failed'),
     ]
 
     placed_at = models.DateTimeField(auto_now_add=True)

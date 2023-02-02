@@ -29,8 +29,14 @@ class ProductAdmin(admin.ModelAdmin):
     list_editable = ['unit_price']
     list_per_page = 20
     list_filter = ['collection', 'last_update', InventoryFilter]
-
     ordering = ['id']
+
+    #! Customizing the form:
+    exclude = ['promotions']
+    prepopulated_fields = {
+        'slug': ['title']
+    }
+    autocomplete_fields = ['collection']
 
     def inventory_status(self, product):
         if product.inventory < 10:
@@ -73,6 +79,9 @@ class OrderAdmin(admin.ModelAdmin):
     list_display = ['id', 'placed_at', 'customer']
     # ordering = ['id']
 
+    #! Customizing the form:
+    autocomplete_fields = ['customer']
+
 
 admin.site.register(Order, OrderAdmin)
 
@@ -80,6 +89,7 @@ admin.site.register(Order, OrderAdmin)
 @admin.register(Collection)
 class CollectionAdmin(admin.ModelAdmin):
     list_display = ['title', 'products_count']
+    search_fields = ['title']
 
     @admin.display(ordering='total_products_count')
     def products_count(self, collection):
