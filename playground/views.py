@@ -1,8 +1,9 @@
 from django.shortcuts import render
 from django.http import HttpResponse
 from django.core.exceptions import ObjectDoesNotExist
-from django.db.models import Q, F, Value
+from django.db.models import Q, F, Value, Func, ExpressionWrapper, DecimalField
 from django.db.models.aggregates import Count, Max, Min, Avg, Sum
+from django.db.models.functions import Concat
 
 from store.models import Product, Customer, Collection, Order, OrderItem
 
@@ -77,5 +78,50 @@ def say_hello(req):
     # *Annotate
     # queryset = Customer.objects.annotate(is_new=Value(True))
     # queryset = Customer.objects.annotate(new_id=F('id')+1)
+
+    # *Calling Database functions:
+    # queryset = Customer.objects.annotate(
+    #     # CONCAT
+    #     full_name=Func(F('first_name'), Value(
+    #         " "), F('last_name'), function='CONCAT')
+    # )
+
+    # queryset = Customer.objects.annotate(fullname=Concat('first_name', Value(" "), 'last_name')
+    #                                      )
+
+    # queryset = Customer.objects.annotate(
+    #     orders_count=Count('order')
+    # )
+
+    # *Expression Wrapper
+    # queryset = Product.objects.annotate(
+    #     discounted_price=ExpressionWrapper(
+    #         F('unit_price') * 0.8, output_field=DecimalField())
+    # )
+
+    # *Customers with their last order id:
+    # queryset = Customer.objects.annotate(last_order=Max('order'))
+
+    # *Collections and count of their products:
+    # queryset = Collection.objects.annotate(
+    #     total_products=Count('product')
+    # )
+
+    # *Customers with more than 5 orders
+    # queryset = Customer.objects.annotate(
+    #     total_orders=Count('order__id')
+    # ).filter(total_orders__gt=5)
+
+    # *Customers and the total amount they’ve spent
+    # queryset = Customer.objects.annotate(
+    #     amount_spent=Sum(
+    #         F('order__orderitem__unit_price') * F('order__orderitem__quantity')
+    #     )
+    # )
+
+    # *Top 5 best-selling products and their total sales:
+    # queryset = Product.objects.annotate(
+    #     total_sales=Sum(F('orderitem__quantity') * F('orderitem__unit_price'))
+    # ).order_by('-total_sales')[:5]
 
     return render(req, 'hello.html', {'name': 'Gaurav', 'result': list(queryset)})
