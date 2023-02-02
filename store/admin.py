@@ -23,6 +23,7 @@ class InventoryFilter(admin.SimpleListFilter):
 
 
 class ProductAdmin(admin.ModelAdmin):
+    actions = ['clear_inventory']
     list_display = ['id', 'title', 'unit_price',
                     'inventory_status', 'collection']
     list_editable = ['unit_price']
@@ -36,6 +37,13 @@ class ProductAdmin(admin.ModelAdmin):
             return 'Low'
         else:
             return 'Ok'
+
+    # todo Custom Actions:
+    @admin.action(description='Clear Inventory')
+    def clear_inventory(self, request, queryset):
+        updated_count = queryset.update(inventory=0)
+        self.message_user(
+            request, f'{updated_count} products updated successfully!')
 
 
 admin.site.register(Product, ProductAdmin)
