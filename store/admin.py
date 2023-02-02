@@ -4,10 +4,16 @@ from .models import Collection, Product, Customer
 
 # Register your models here.
 class ProductAdmin(admin.ModelAdmin):
-    list_display = ['id', 'title', 'unit_price']
+    list_display = ['id', 'title', 'unit_price', 'inventory_status']
     list_editable = ['unit_price']
     list_per_page = 20
     ordering = ['id']
+
+    def inventory_status(self, product):
+        if product.inventory < 10:
+            return 'Low'
+        else:
+            return 'Ok'
 
 
 admin.site.register(Product, ProductAdmin)
