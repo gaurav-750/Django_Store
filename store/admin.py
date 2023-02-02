@@ -3,7 +3,7 @@ from django.db.models.aggregates import Count
 from django.utils.html import format_html, urlencode
 from django.urls import reverse
 
-from .models import Collection, Product, Customer, Order
+from .models import Collection, Product, Customer, Order, OrderItem
 
 # Register your models here.
 
@@ -30,6 +30,7 @@ class ProductAdmin(admin.ModelAdmin):
     list_per_page = 20
     list_filter = ['collection', 'last_update', InventoryFilter]
     ordering = ['id']
+    search_fields = ['title']
 
     #! Customizing the form:
     exclude = ['promotions']
@@ -75,12 +76,21 @@ class CustomerAdmin(admin.ModelAdmin):
 admin.site.register(Customer, CustomerAdmin)
 
 
+class OrderItemInline(admin.TabularInline):
+    model = OrderItem
+    autocomplete_fields = ['product']
+    min_num = 1
+    extra = 0
+    max_num = 10
+
+
 class OrderAdmin(admin.ModelAdmin):
     list_display = ['id', 'placed_at', 'customer']
     # ordering = ['id']
 
     #! Customizing the form:
     autocomplete_fields = ['customer']
+    inlines = [OrderItemInline]
 
 
 admin.site.register(Order, OrderAdmin)
