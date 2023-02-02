@@ -4,6 +4,7 @@ from django.core.exceptions import ObjectDoesNotExist
 from django.db.models import Q, F, Value, Func, ExpressionWrapper, DecimalField
 from django.db.models.aggregates import Count, Max, Min, Avg, Sum
 from django.db.models.functions import Concat
+from django.db import connection
 
 from store.models import Product, Customer, Collection, Order, OrderItem
 
@@ -148,6 +149,20 @@ def say_hello(req):
     # Collection.objects.filter(pk=11).update(featured_product_id=1)
 
     # *Delete:
-    Collection.objects.filter(id__gt=10).delete()
+    # Collection.objects.filter(id__gt=10).delete()
 
-    return render(req, 'hello.html', {'name': 'Gaurav'})
+    # *Executing raw queries:
+    # queryset = Product.objects.raw(
+    #     'select id, title from store_product'
+    # )
+
+    # cursor = connection.cursor()
+    # cursor.execute('select * from store_product')
+    # cursor.close()
+
+    with connection.cursor() as cursor:
+        cursor.execute("select * from store_product")
+        queryset = cursor.fetchmany(5)
+        print('row', queryset)
+
+    return render(req, 'hello.html', {'name': 'Gaurav', 'result': list(queryset)})
