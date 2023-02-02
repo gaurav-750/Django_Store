@@ -4,7 +4,6 @@ from django.utils.html import format_html, urlencode
 from django.urls import reverse
 
 from .models import Collection, Product, Customer, Order, OrderItem
-
 # Register your models here.
 
 
