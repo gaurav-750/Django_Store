@@ -124,4 +124,30 @@ def say_hello(req):
     #     total_sales=Sum(F('orderitem__quantity') * F('orderitem__unit_price'))
     # ).order_by('-total_sales')[:5]
 
-    return render(req, 'hello.html', {'name': 'Gaurav', 'result': list(queryset)})
+    # *Insert:
+    # coll = Collection()
+    # coll.title = 'Video Games'
+    # coll.featured_product = Product(pk=1)
+    # coll.save()
+
+    # or
+    # Collection.objects.create(title = '')
+
+    # *Update
+    # coll = Collection(pk=11)
+    # # coll.title = 'Games'
+    # coll.featured_product = None
+    # coll.save()
+
+    # coll = Collection.objects.get(pk=11)
+    # # coll.title = 'Video Games'
+    # coll.featured_product = None
+    # coll.save()
+
+    # or
+    # Collection.objects.filter(pk=11).update(featured_product_id=1)
+
+    # *Delete:
+    Collection.objects.filter(id__gt=10).delete()
+
+    return render(req, 'hello.html', {'name': 'Gaurav'})
