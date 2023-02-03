@@ -3,8 +3,8 @@ from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework import status
 
-from .models import Product
-from .serializers import ProductSerializer
+from .models import Product, Collection
+from .serializers import ProductSerializer, CollectionSerializer
 
 
 # Create your views here.
@@ -51,6 +51,37 @@ def product_detail(req, pk):
         return Response(status=status.HTTP_204_NO_CONTENT)
 
 
-@api_view()
+@api_view(['GET', 'POST'])
+def collection_list(req):
+    if req.method == 'GET':
+        collections = Collection.objects.all()
+        serializer = CollectionSerializer(collections, many=True)
+
+        return Response(serializer.data)
+    elif req.method == 'POST':
+        # deserialization
+        serializer = CollectionSerializer(data=req.data)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
+
+
+@api_view(['GET', 'PUT', 'DELETE'])
 def collection_detail(req, pk):
-    return Response("ok")
+    collection = get_object_or_404(Collection, pk=pk)
+    if req.method == 'GET':
+        serializer = CollectionSerializer(collection)
+        return Response(serializer.data)
+    elif req.method == 'PUT':
+        serializer = CollectionSerializer(collection, data=req.data)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+        return Response(status=status.HTTP_201_CREATED)
+    elif req.method == 'DELETE':
+        if collection.product_set.count() > 0:
+            return Response({"error": "Order items are related to this product"},
+                            status=status.HTTP_405_METHOD_NOT_ALLOWED)
+
+        collection.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
