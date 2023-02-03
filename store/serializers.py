@@ -1,7 +1,12 @@
 from decimal import Decimal
 from rest_framework import serializers
 
-from .models import Product
+from .models import Product, Collection
+
+
+class CollectionSerializer(serializers.Serializer):
+    id = serializers.IntegerField()
+    title = serializers.CharField(max_length=255)
 
 
 class ProductSerializer(serializers.Serializer):
@@ -12,6 +17,18 @@ class ProductSerializer(serializers.Serializer):
 
     # adding custom field:
     price_with_tax = serializers.SerializerMethodField(method_name='cal_tax')
+
+    # *Serializing relationships:
+    # collection = serializers.PrimaryKeyRelatedField(
+    #     queryset=Collection.objects.all()
+    # )
+    # collection = serializers.StringRelatedField()
+
+    # collection = CollectionSerializer()
+    collection = serializers.HyperlinkedRelatedField(
+        queryset=Collection.objects.all(),
+        view_name='collection-detail'
+    )
 
     def cal_tax(self, product: Product):
         return product.unit_price * Decimal(1.1)
