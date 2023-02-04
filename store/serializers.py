@@ -36,3 +36,14 @@ class ProductSerializer(serializers.ModelSerializer):
 
     def cal_tax(self, product: Product):
         return round(product.unit_price * Decimal(1.1), ndigits=2)
+
+
+class ReviewSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Review
+        fields = ['id', 'name', 'description', 'date']
+
+    def create(self, validated_data):
+        product_id = self.context['product_id']
+        # validated_data -> form se aa raha hai, and usme hum product_id add kr rahe
+        return Review.objects.create(product_id=product_id, **validated_data)

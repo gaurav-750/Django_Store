@@ -9,8 +9,8 @@ from rest_framework.generics import ListCreateAPIView, RetrieveUpdateDestroyAPIV
 from rest_framework.viewsets import ModelViewSet
 from rest_framework import status
 
-from .models import Product, Collection, OrderItem
-from .serializers import ProductSerializer, CollectionSerializer
+from .models import Product, Collection, OrderItem, Review
+from .serializers import ProductSerializer, CollectionSerializer, ReviewSerializer
 
 
 # Create your views here.
@@ -30,6 +30,21 @@ class ProductViewSet(ModelViewSet):
             return Response({"error": "Order items are related to this product"},
                             status=status.HTTP_405_METHOD_NOT_ALLOWED)
         return super().destroy(request, *args, **kwargs)
+
+
+class ReviewViewset(ModelViewSet):
+    # queryset = Review.objects.all()
+    def get_queryset(self):
+        # self.kwargs = {'product_pk': '2'}
+        return Review.objects.filter(product_id=self.kwargs['product_pk'])
+
+    serializer_class = ReviewSerializer
+
+    # todo To pass some extra data to serializer
+    def get_serializer_context(self):
+        return {
+            'product_id': self.kwargs['product_pk']
+        }
 
 
 class CollectionViewset(ModelViewSet):
