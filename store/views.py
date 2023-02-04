@@ -5,6 +5,7 @@ from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework.mixins import ListModelMixin, CreateModelMixin
+from rest_framework.generics import ListCreateAPIView
 from rest_framework import status
 
 from .models import Product, Collection
@@ -12,22 +13,20 @@ from .serializers import ProductSerializer, CollectionSerializer
 
 
 # Create your views here.
-class ProductList(APIView):
-    def get(self, req):
-        products = Product.objects.select_related('collection').all()
-        serializer = ProductSerializer(
-            products, many=True, context={
-                'request': req,
-            })
-        return Response(serializer.data)
+class ProductList(ListCreateAPIView):
+    queryset = Product.objects.select_related('collection').all()
+    serializer_class = ProductSerializer
 
-    def post(self, req):
-        # deserialization
-        serializer = ProductSerializer(data=req.data)
-        # *validate the data:
-        serializer.is_valid(raise_exception=True)
-        serializer.save()
-        return Response(serializer.data, status=status.HTTP_201_CREATED)
+    # def get_queryset(self):
+    # return Product.objects.select_related('collection').all()
+
+    # def get_serializer_class(self):
+    #     return ProductSerializer
+
+    def get_serializer_context(self):
+        return {
+            'request': self.request,
+        }
 
 
 class ProductDetail(APIView):
@@ -53,21 +52,28 @@ class ProductDetail(APIView):
         return Response(status=status.HTTP_204_NO_CONTENT)
 
 
-@api_view(['GET', 'POST'])
-def collection_list(req):
-    if req.method == 'GET':
-        collections = Collection.objects.annotate(
-            products_count=Count('products'))
-        serializer = CollectionSerializer(collections, many=True)
+class CollectionList(ListCreateAPIView):
+    queryset = Collection.objects.annotate(
+        products_count=Count('products')
+    )
 
-        return Response(serializer.data)
-    elif req.method == 'POST':
-        # deserialization
-        serializer = CollectionSerializer(data=req.data)
-        serializer.is_valid(raise_exception=True)
-        serializer.save()
+    serializer_class = CollectionSerializer
 
-        return Response(serializer.data, status=status.HTTP_201_CREATED)
+# @api_view(['GET', 'POST'])
+# def collection_list(req):
+#     if req.method == 'GET':
+#         collections = Collection.objects.annotate(
+#             products_count=Count('products'))
+#         serializer = CollectionSerializer(collections, many=True)
+
+#         return Response(serializer.data)
+#     elif req.method == 'POST':
+#         # deserialization
+#         serializer = CollectionSerializer(data=req.data)
+#         serializer.is_valid(raise_exception=True)
+#         serializer.save()
+
+#         return Response(serializer.data, status=status.HTTP_201_CREATED)
 
 
 @api_view(['GET', 'PUT', 'DELETE'])
