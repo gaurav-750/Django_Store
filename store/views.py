@@ -9,7 +9,7 @@ from rest_framework.generics import ListCreateAPIView, RetrieveUpdateDestroyAPIV
 from rest_framework.viewsets import ModelViewSet
 from rest_framework import status
 
-from .models import Product, Collection
+from .models import Product, Collection, OrderItem
 from .serializers import ProductSerializer, CollectionSerializer
 
 
@@ -24,13 +24,19 @@ class ProductViewSet(ModelViewSet):
             'request': self.request,
         }
 
-    def delete(self, req, pk):
-        product = get_object_or_404(Product, pk=pk)
-        if product.orderitem_set.count() > 0:
+    def destroy(self, request, *args, **kwargs):
+        print('🛑🛑', args)
+        print(kwargs)
+        if OrderItem.objects.filter(product_id=kwargs['pk']).count() > 0:
             return Response({"error": "Order items are related to this product"},
                             status=status.HTTP_405_METHOD_NOT_ALLOWED)
-        product.delete()
-        return Response(status=status.HTTP_204_NO_CONTENT)
+        return super().destroy(request, *args, **kwargs)
+
+    # def delete(self, req, pk):
+    #     product = get_object_or_404(Product, pk=pk)
+
+    #     product.delete()
+    #     return Response(status=status.HTTP_204_NO_CONTENT)
 
 
 class CollectionViewset(ModelViewSet):
@@ -39,14 +45,21 @@ class CollectionViewset(ModelViewSet):
     )
     serializer_class = CollectionSerializer
 
-    def delete(self, req, pk):
-        collection = get_object_or_404(Collection, pk=pk)
-        if collection.products.count() > 0:
+    def destroy(self, request, *args, **kwargs):
+        if Product.objects.filter(collection_id=kwargs['pk']).count() > 0:
             return Response({"error": "Products are related to this collection!"},
                             status=status.HTTP_405_METHOD_NOT_ALLOWED)
 
-        collection.delete()
-        return Response(status=status.HTTP_204_NO_CONTENT)
+        return super().destroy(request, *args, **kwargs)
+
+    # def delete(self, req, pk):
+    #     collection = get_object_or_404(Collection, pk=pk)
+    #     if collection.products.count() > 0:
+    #         return Response({"error": "Products are related to this collection!"},
+    #                         status=status.HTTP_405_METHOD_NOT_ALLOWED)
+
+    #     collection.delete()
+    #     return Response(status=status.HTTP_204_NO_CONTENT)
 
 
 # class ProductList(ListCreateAPIView):
