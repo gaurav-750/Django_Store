@@ -1,6 +1,8 @@
 from django.db import models
 from django.core.validators import MinValueValidator
 
+from uuid import uuid4
+
 # Create your models here.
 
 
@@ -114,12 +116,19 @@ class OrderItem(models.Model):
 
 
 class Cart(models.Model):
+    id = models.UUIDField(primary_key=True, default=uuid4)
     created_at = models.DateTimeField(auto_now_add=True)
 
 
 class CartItem(models.Model):
     # *1-Many
-    cart = models.ForeignKey(Cart, on_delete=models.CASCADE)
+    cart = models.ForeignKey(
+        Cart, on_delete=models.CASCADE, related_name='cartitems')
+    # so in Cart we'll have 'cartitems' instead of cartitem_set
     product = models.ForeignKey(Product, on_delete=models.CASCADE)
 
     quantity = models.PositiveSmallIntegerField()
+
+    # *create a unique index on cart+product
+    class Meta:
+        unique_together = [['cart', 'product']]
