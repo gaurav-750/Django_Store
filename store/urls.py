@@ -6,7 +6,7 @@ from .views import ProductViewSet, CollectionViewset, ReviewViewset
 
 router = routers.DefaultRouter()
 # Parent router
-router.register('products', ProductViewSet)
+router.register('products', ProductViewSet, basename='products')
 
 products_router = routers.NestedDefaultRouter(
     router, 'products', lookup='product')
