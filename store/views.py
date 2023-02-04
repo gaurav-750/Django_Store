@@ -25,18 +25,11 @@ class ProductViewSet(ModelViewSet):
         }
 
     def destroy(self, request, *args, **kwargs):
-        print('🛑🛑', args)
         print(kwargs)
         if OrderItem.objects.filter(product_id=kwargs['pk']).count() > 0:
             return Response({"error": "Order items are related to this product"},
                             status=status.HTTP_405_METHOD_NOT_ALLOWED)
         return super().destroy(request, *args, **kwargs)
-
-    # def delete(self, req, pk):
-    #     product = get_object_or_404(Product, pk=pk)
-
-    #     product.delete()
-    #     return Response(status=status.HTTP_204_NO_CONTENT)
 
 
 class CollectionViewset(ModelViewSet):
@@ -51,15 +44,6 @@ class CollectionViewset(ModelViewSet):
                             status=status.HTTP_405_METHOD_NOT_ALLOWED)
 
         return super().destroy(request, *args, **kwargs)
-
-    # def delete(self, req, pk):
-    #     collection = get_object_or_404(Collection, pk=pk)
-    #     if collection.products.count() > 0:
-    #         return Response({"error": "Products are related to this collection!"},
-    #                         status=status.HTTP_405_METHOD_NOT_ALLOWED)
-
-    #     collection.delete()
-    #     return Response(status=status.HTTP_204_NO_CONTENT)
 
 
 # class ProductList(ListCreateAPIView):
