@@ -81,7 +81,7 @@ class CartViewset(CreateModelMixin,
                   RetrieveModelMixin,
                   DestroyModelMixin,
                   GenericViewSet):
-    queryset = Cart.objects.all()
+    queryset = Cart.objects.prefetch_related('cartitems__product').all()
     serializer_class = CartSerializer
 
 
