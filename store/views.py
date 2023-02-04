@@ -9,6 +9,7 @@ from rest_framework import status
 from .models import Product, Collection, OrderItem, Review
 from .serializers import ProductSerializer, CollectionSerializer, ReviewSerializer
 from .filters import ProductFilter
+from .pagination import CustomPagination
 
 # Create your views here.
 
@@ -30,6 +31,8 @@ class ProductViewSet(ModelViewSet):
     filterset_class = ProductFilter
     search_fields = ['title', 'description']
     ordering_fields = ['unit_price', 'last_update']
+
+    pagination_class = CustomPagination
 
     def get_serializer_context(self):
         return {
