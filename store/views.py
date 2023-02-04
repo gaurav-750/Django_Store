@@ -1,4 +1,6 @@
 from django.shortcuts import get_object_or_404
+from django.db.models.aggregates import Count
+
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework import status
@@ -21,7 +23,6 @@ def product_list(req):
     elif req.method == 'POST':
         # deserialization
         serializer = ProductSerializer(data=req.data)
-        print(type(serializer))
 
         # *validate the data:
         serializer.is_valid(raise_exception=True)
@@ -54,7 +55,8 @@ def product_detail(req, pk):
 @api_view(['GET', 'POST'])
 def collection_list(req):
     if req.method == 'GET':
-        collections = Collection.objects.all()
+        collections = Collection.objects.annotate(
+            products_count=Count('products'))
         serializer = CollectionSerializer(collections, many=True)
 
         return Response(serializer.data)
@@ -69,7 +71,8 @@ def collection_list(req):
 
 @api_view(['GET', 'PUT', 'DELETE'])
 def collection_detail(req, pk):
-    collection = get_object_or_404(Collection, pk=pk)
+    collection = get_object_or_404(Collection.objects.annotate(
+        products_count=Count('products')), pk=pk)
     if req.method == 'GET':
         serializer = CollectionSerializer(collection)
         return Response(serializer.data)
@@ -79,8 +82,8 @@ def collection_detail(req, pk):
         serializer.save()
         return Response(status=status.HTTP_201_CREATED)
     elif req.method == 'DELETE':
-        if collection.product_set.count() > 0:
-            return Response({"error": "Order items are related to this product"},
+        if collection.products.count() > 0:
+            return Response({"error": "Products are related to this collection!"},
                             status=status.HTTP_405_METHOD_NOT_ALLOWED)
 
         collection.delete()

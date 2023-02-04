@@ -112,7 +112,7 @@ class CollectionAdmin(admin.ModelAdmin):
 
     def get_queryset(self, request):
         return Collection.objects.annotate(
-            total_products_count=Count('product')
+            total_products_count=Count('products')
         )
 
 # admin.site.register(Collection)

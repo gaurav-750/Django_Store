@@ -32,7 +32,8 @@ class Product(models.Model):
     last_update = models.DateTimeField(auto_now=True)
 
     # *1-Many
-    collection = models.ForeignKey(Collection, on_delete=models.PROTECT)
+    collection = models.ForeignKey(
+        Collection, on_delete=models.PROTECT, related_name='products')
 
     # many-many
     promotions = models.ManyToManyField(Promotion, blank=True)

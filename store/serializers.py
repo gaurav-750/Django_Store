@@ -9,11 +9,13 @@ class CollectionSerializer(serializers.ModelSerializer):
         model = Collection
         fields = ['id', 'title', 'products_count']
 
-    products_count = serializers.SerializerMethodField(
-        method_name='cal_products_count')
+    products_count = serializers.IntegerField()
 
-    def cal_products_count(self, collection: Collection):
-        return collection.product_set.count()
+    # products_count = serializers.SerializerMethodField(
+    #     method_name='cal_products_count')
+
+    # def cal_products_count(self, collection: Collection):
+    #     return collection.product_set.count()
 
 
 class ProductSerializer(serializers.ModelSerializer):
@@ -28,7 +30,7 @@ class ProductSerializer(serializers.ModelSerializer):
     # price = serializers.DecimalField(
     #     source='unit_price', max_digits=5, decimal_places=2)
 
-    # # adding custom field:
+    # *adding custom field:
     price_with_tax = serializers.SerializerMethodField(method_name='cal_tax')
 
     # # *Serializing relationships:
