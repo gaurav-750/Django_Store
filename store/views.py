@@ -8,7 +8,7 @@ from rest_framework.viewsets import ModelViewSet, GenericViewSet
 from rest_framework import status
 
 from .models import Product, Collection, OrderItem, Review, Cart, CartItem
-from .serializers import ProductSerializer, CollectionSerializer, ReviewSerializer, CartSerializer, CartItemSerializer
+from .serializers import ProductSerializer, CollectionSerializer, ReviewSerializer, CartSerializer, CartItemSerializer, AddCartItemSerializer
 from .filters import ProductFilter
 from .pagination import CustomPagination
 
@@ -89,7 +89,15 @@ class CartItemViewset(ModelViewSet):
     def get_queryset(self):
         return CartItem.objects.filter(cart_id=self.kwargs['cart_pk'])
 
-    serializer_class = CartItemSerializer
+    def get_serializer_class(self):
+        if self.request.method == 'POST':
+            return AddCartItemSerializer
+        else:
+            return CartItemSerializer
+
+    def get_serializer_context(self):
+        return {'cart_id': self.kwargs['cart_pk']}
+
 
 # class ProductList(ListCreateAPIView):
 #     queryset = Product.all()
@@ -106,7 +114,6 @@ class CartItemViewset(ModelViewSet):
 #             'request': self.request,
 #         }
 
-
 # class ProductDetail(RetrieveUpdateDestroyAPIView):
 #     # queryset = Product.objects.all()
 #     # serializer_class = ProductSerializer
@@ -119,14 +126,12 @@ class CartItemViewset(ModelViewSet):
 #         product.delete()
 #         return Response(status=status.HTTP_204_NO_CONTENT)
 
-
 # class CollectionList(ListCreateAPIView):
 #     queryset = Collection.objects.annotate(
 #         products_count=Count('products')
 #     )
 
 #     serializer_class = CollectionSerializer
-
 
 # class CollectionDetail(RetrieveUpdateDestroyAPIView):
 #     # GET, PUT
