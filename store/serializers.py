@@ -54,6 +54,10 @@ class SimpleProductSerializer(serializers.ModelSerializer):
         model = Product
         fields = ['id', 'title', 'unit_price']
 
+    # title = serializers.CharField(read_only=True)
+    # unit_price = serializers.DecimalField(
+    #     max_digits=6, decimal_places=2, read_only=True)
+
 
 class CartItemSerializer(serializers.ModelSerializer):
     product = SimpleProductSerializer()
@@ -69,7 +73,7 @@ class CartItemSerializer(serializers.ModelSerializer):
 
 class CartSerializer(serializers.ModelSerializer):
     id = serializers.UUIDField(read_only=True)
-    cartitems = CartItemSerializer(many=True)
+    cartitems = CartItemSerializer(many=True, read_only=True)
 
     total_amount = serializers.SerializerMethodField('get_total_amount')
 
