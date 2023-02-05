@@ -54,10 +54,6 @@ class SimpleProductSerializer(serializers.ModelSerializer):
         model = Product
         fields = ['id', 'title', 'unit_price']
 
-    # title = serializers.CharField(read_only=True)
-    # unit_price = serializers.DecimalField(
-    #     max_digits=6, decimal_places=2, read_only=True)
-
 
 class CartItemSerializer(serializers.ModelSerializer):
     product = SimpleProductSerializer()
@@ -105,6 +101,12 @@ class AddCartItemSerializer(serializers.ModelSerializer):
                 cart_id=cart_id, **self.validated_data)
 
         return self.instance
+
+
+class UpdateCartItemSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = CartItem
+        fields = ['quantity']
 
 
 class CartSerializer(serializers.ModelSerializer):
