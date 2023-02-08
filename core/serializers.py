@@ -1,4 +1,5 @@
-from djoser.serializers import UserCreateSerializer as BaseUCS
+from djoser.serializers import UserCreateSerializer as BaseUCS, \
+    UserSerializer as BaseUS
 
 
 class UserCreateSerializer(BaseUCS):
@@ -11,3 +12,9 @@ class UserCreateSerializer(BaseUCS):
             'first_name',
             'last_name'
         ]
+
+
+class UserSerializer(BaseUS):
+    class Meta(BaseUS.Meta):
+        fields = ['id', 'username', 'email',
+                  'first_name', 'last_name']
