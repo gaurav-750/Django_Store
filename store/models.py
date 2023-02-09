@@ -120,7 +120,8 @@ class Order(models.Model):
 
 class OrderItem(models.Model):
     # *1-Many
-    order = models.ForeignKey(Order, on_delete=models.PROTECT)
+    order = models.ForeignKey(
+        Order, on_delete=models.PROTECT, related_name='orderitems')
     product = models.ForeignKey(Product, on_delete=models.PROTECT)
 
     quantity = models.PositiveSmallIntegerField()

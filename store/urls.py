@@ -2,7 +2,7 @@ from django.urls import path, include
 # from rest_framework.routers import SimpleRouter, DefaultRouter
 from rest_framework_nested import routers
 
-from .views import ProductViewSet, CollectionViewset, ReviewViewset, CustomerViewset, CartViewset, CartItemViewset
+from .views import OrderViewset, ProductViewSet, CollectionViewset, ReviewViewset, CustomerViewset, CartViewset, CartItemViewset
 
 router = routers.DefaultRouter()
 # Parent router
@@ -10,6 +10,7 @@ router.register('products', ProductViewSet, basename='products')
 router.register('collections', CollectionViewset)
 router.register('carts', CartViewset)
 router.register('customers', CustomerViewset)
+router.register('orders', OrderViewset)
 
 # Child router
 products_router = routers.NestedDefaultRouter(
