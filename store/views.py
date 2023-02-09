@@ -7,17 +7,19 @@ from rest_framework.mixins import ListModelMixin, CreateModelMixin, UpdateModelM
 from rest_framework.viewsets import ModelViewSet, GenericViewSet
 from rest_framework import status
 from rest_framework.decorators import action
-from rest_framework.permissions import AllowAny, IsAuthenticated, IsAuthenticatedOrReadOnly
+from rest_framework.permissions import IsAdminUser, IsAuthenticated
 
 from .models import Product, Collection, OrderItem, Review, Cart, CartItem, Customer
 from .serializers import CustomerSerializer, ProductSerializer, CollectionSerializer, ReviewSerializer, CartSerializer, CartItemSerializer, AddCartItemSerializer, UpdateCartItemSerializer
 from .filters import ProductFilter
 from .pagination import CustomPagination
+from .permissions import IsAdminOrReadOnly
 
 # Create your views here.
 
 
 class ProductViewSet(ModelViewSet):
+    permission_classes = [IsAdminOrReadOnly]
     queryset = Product.objects.all()
     # def get_queryset(self):
     #     queryset = Product.objects.all()
@@ -66,6 +68,8 @@ class ReviewViewset(ModelViewSet):
 
 
 class CollectionViewset(ModelViewSet):
+    permission_classes = [IsAdminOrReadOnly]
+
     queryset = Collection.objects.annotate(
         products_count=Count('products')
     )
@@ -106,21 +110,19 @@ class CartItemViewset(ModelViewSet):
         return {'cart_id': self.kwargs['cart_pk']}
 
 
-class CustomerViewset(CreateModelMixin,
-                      RetrieveModelMixin,
-                      UpdateModelMixin,
-                      GenericViewSet):
+class CustomerViewset(ModelViewSet):
+    permission_classes = [IsAdminUser]
 
     queryset = Customer.objects.all()
     serializer_class = CustomerSerializer
 
-    def get_permissions(self):
-        if self.request.method == 'GET':
-            return [AllowAny()]
-        else:
-            return [IsAuthenticated()]
+    # def get_permissions(self):
+    #     if self.request.method == 'GET':
+    #         return [AllowAny()]
+    #     else:
+    #         return [IsAuthenticated()]
 
-    @action(detail=False, methods=['GET', 'PUT'])
+    @action(detail=False, methods=['GET', 'PUT'], permission_classes=[IsAuthenticated])
     def me(self, req):
         (customer, created) = Customer.objects.get_or_create(user_id=req.user.id)
         if req.method == 'GET':
