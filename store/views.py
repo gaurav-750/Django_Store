@@ -136,8 +136,21 @@ class CustomerViewset(ModelViewSet):
 
 
 class OrderViewset(ModelViewSet):
-    queryset = Order.objects.all()
+    permission_classes = [IsAuthenticated]
+
+    # queryset = Order.objects.all()
     serializer_class = OrderSerializer
+
+    def get_queryset(self):
+        current_user = self.request.user
+        # *if user is Admin:
+        if current_user.is_staff:
+            return Order.objects.all()
+
+        # if the user is not admin:
+        (customer, created) = Customer.objects.get_or_create(
+            user_id=current_user.id)
+        return Order.objects.filter(customer_id=customer.id)
 
 
 # class ProductList(ListCreateAPIView):

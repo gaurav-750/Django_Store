@@ -10,7 +10,7 @@ router.register('products', ProductViewSet, basename='products')
 router.register('collections', CollectionViewset)
 router.register('carts', CartViewset)
 router.register('customers', CustomerViewset)
-router.register('orders', OrderViewset)
+router.register('orders', OrderViewset, basename='orders')
 
 # Child router
 products_router = routers.NestedDefaultRouter(
