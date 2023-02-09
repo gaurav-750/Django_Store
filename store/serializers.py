@@ -184,3 +184,4 @@ class CreateOrderSerializer(serializers.Serializer):
 
             # delete the cart:
             Cart.objects.filter(pk=cart_id).delete()
+            return order_created
