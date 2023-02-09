@@ -1,6 +1,6 @@
 from decimal import Decimal
+from django.db import transaction
 from rest_framework import serializers
-
 from .models import CartItem, Customer, Order, OrderItem, Product, Collection, Review, Cart
 
 
@@ -156,13 +156,31 @@ class CreateOrderSerializer(serializers.Serializer):
     cart_id = serializers.UUIDField()
 
     def save(self, **kwargs):
-        # print('🛑🛑', self.validated_data)
-        # print(self.validated_data['cart_id'])
-        # print(self.context['user_id'])
+        with transaction.atomic():
+            cart_id = self.validated_data['cart_id']
 
-        (customer, created) = Customer.objects.get_or_create(
-            user_id=self.context['user_id'])
-        # todo create an Order:
-        Order.objects.create(customer_id=customer.id)
+            (customer, created) = Customer.objects.get_or_create(
+                user_id=self.context['user_id'])
+            # todo create an Order:
+            order_created = Order.objects.create(customer_id=customer.id)
 
-        # todo OrderItems:
+            # todo OrderItems:
+            # for each cartitem in the Cart, we need to create an order item and save it in the db:
+            cart_items = CartItem.objects.select_related('product').filter(
+                cart_id=cart_id)
+
+            # using list comprehension:
+            order_items = [
+                OrderItem(
+                    order=order_created,
+                    product=item.product,
+                    unit_price=item.product.unit_price,
+                    quantity=item.quantity
+                ) for item in cart_items
+            ]
+
+            # *save the order_items in the DB:
+            OrderItem.objects.bulk_create(order_items)
+
+            # delete the cart:
+            Cart.objects.filter(pk=cart_id).delete()
