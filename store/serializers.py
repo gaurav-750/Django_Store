@@ -150,3 +150,19 @@ class OrderSerializer(serializers.ModelSerializer):
         model = Order
         fields = ['id', 'customer', 'placed_at',
                   'payment_status', 'orderitems']
+
+
+class CreateOrderSerializer(serializers.Serializer):
+    cart_id = serializers.UUIDField()
+
+    def save(self, **kwargs):
+        # print('🛑🛑', self.validated_data)
+        # print(self.validated_data['cart_id'])
+        # print(self.context['user_id'])
+
+        (customer, created) = Customer.objects.get_or_create(
+            user_id=self.context['user_id'])
+        # todo create an Order:
+        Order.objects.create(customer_id=customer.id)
+
+        # todo OrderItems:

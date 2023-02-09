@@ -10,7 +10,7 @@ from rest_framework.decorators import action
 from rest_framework.permissions import IsAdminUser, IsAuthenticated
 
 from .models import Order, Product, Collection, OrderItem, Review, Cart, CartItem, Customer
-from .serializers import CustomerSerializer, OrderSerializer, ProductSerializer, CollectionSerializer, ReviewSerializer, CartSerializer, CartItemSerializer, AddCartItemSerializer, UpdateCartItemSerializer
+from .serializers import CreateOrderSerializer, CustomerSerializer, OrderSerializer, ProductSerializer, CollectionSerializer, ReviewSerializer, CartSerializer, CartItemSerializer, AddCartItemSerializer, UpdateCartItemSerializer
 from .filters import ProductFilter
 from .pagination import CustomPagination
 from .permissions import IsAdminOrReadOnly
@@ -139,7 +139,13 @@ class OrderViewset(ModelViewSet):
     permission_classes = [IsAuthenticated]
 
     # queryset = Order.objects.all()
-    serializer_class = OrderSerializer
+    # serializer_class = OrderSerializer
+
+    def get_serializer_class(self):
+        if self.request.method == 'POST':
+            return CreateOrderSerializer
+        else:
+            return OrderSerializer
 
     def get_queryset(self):
         current_user = self.request.user
@@ -151,6 +157,11 @@ class OrderViewset(ModelViewSet):
         (customer, created) = Customer.objects.get_or_create(
             user_id=current_user.id)
         return Order.objects.filter(customer_id=customer.id)
+
+    def get_serializer_context(self):
+        return {
+            'user_id': self.request.user.id
+        }
 
 
 # class ProductList(ListCreateAPIView):
