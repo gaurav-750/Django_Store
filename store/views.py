@@ -6,6 +6,7 @@ from rest_framework.response import Response
 from rest_framework.mixins import ListModelMixin, CreateModelMixin, UpdateModelMixin, DestroyModelMixin, RetrieveModelMixin
 from rest_framework.viewsets import ModelViewSet, GenericViewSet
 from rest_framework import status
+from rest_framework.decorators import action
 
 from .models import Product, Collection, OrderItem, Review, Cart, CartItem, Customer
 from .serializers import CustomerSerializer, ProductSerializer, CollectionSerializer, ReviewSerializer, CartSerializer, CartItemSerializer, AddCartItemSerializer, UpdateCartItemSerializer
@@ -111,6 +112,18 @@ class CustomerViewset(CreateModelMixin,
 
     queryset = Customer.objects.all()
     serializer_class = CustomerSerializer
+
+    @action(detail=False, methods=['GET', 'PUT'])
+    def me(self, req):
+        (customer, created) = Customer.objects.get_or_create(user_id=req.user.id)
+        if req.method == 'GET':
+            serializer = CustomerSerializer(customer)
+            return Response(serializer.data)
+        elif req.method == 'PUT':
+            serializer = CustomerSerializer(customer, data=req.data)
+            serializer.is_valid(raise_exception=True)
+            serializer.save()
+            return Response(serializer.data)
 
 
 # class ProductList(ListCreateAPIView):
