@@ -10,7 +10,7 @@ from rest_framework.decorators import action
 from rest_framework.permissions import IsAdminUser, IsAuthenticated
 
 from .models import Order, Product, Collection, OrderItem, Review, Cart, CartItem, Customer
-from .serializers import CreateOrderSerializer, CustomerSerializer, OrderSerializer, ProductSerializer, CollectionSerializer, ReviewSerializer, CartSerializer, CartItemSerializer, AddCartItemSerializer, UpdateCartItemSerializer
+from .serializers import CreateOrderSerializer, CustomerSerializer, OrderSerializer, ProductSerializer, CollectionSerializer, ReviewSerializer, CartSerializer, CartItemSerializer, AddCartItemSerializer, UpdateCartItemSerializer, UpdateOrderSerializer
 from .filters import ProductFilter
 from .pagination import CustomPagination
 from .permissions import IsAdminOrReadOnly
@@ -136,10 +136,15 @@ class CustomerViewset(ModelViewSet):
 
 
 class OrderViewset(ModelViewSet):
-    permission_classes = [IsAuthenticated]
-
+    # permission_classes = [IsAuthenticated]
     # queryset = Order.objects.all()
     # serializer_class = OrderSerializer
+    http_method_names = ['get', 'post', 'patch', 'delete', 'options', 'head']
+
+    def get_permissions(self):
+        if self.request.method in ['PATCH', 'DELETE']:
+            return [IsAdminUser()]
+        return [IsAuthenticated()]
 
     def create(self, request, *args, **kwargs):
         serializer = CreateOrderSerializer(data=request.data, context={
@@ -153,6 +158,8 @@ class OrderViewset(ModelViewSet):
     def get_serializer_class(self):
         if self.request.method == 'POST':
             return CreateOrderSerializer
+        elif self.request.method == 'PATCH':
+            return UpdateOrderSerializer
         else:
             return OrderSerializer
 
