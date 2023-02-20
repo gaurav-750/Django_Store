@@ -1,7 +1,8 @@
 from decimal import Decimal
 from django.db import transaction
 from rest_framework import serializers
-from .models import CartItem, Customer, Order, OrderItem, Product, Collection, Review, Cart
+from .models import CartItem, Customer, Order, OrderItem, \
+    Product, Collection, Review, Cart, ProductImage
 
 
 class CollectionSerializer(serializers.ModelSerializer):
@@ -36,6 +37,16 @@ class ProductSerializer(serializers.ModelSerializer):
 
     def cal_tax(self, product: Product):
         return round(product.unit_price * Decimal(1.1), ndigits=2)
+
+
+class ProductImageSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = ProductImage
+        fields = ['id', 'image']
+
+    def create(self, validated_data):
+        return ProductImage.objects.create(product_id=self.context['product_id'],
+                                           **validated_data)
 
 
 class ReviewSerializer(serializers.ModelSerializer):

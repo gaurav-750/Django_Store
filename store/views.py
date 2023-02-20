@@ -9,8 +9,8 @@ from rest_framework import status
 from rest_framework.decorators import action
 from rest_framework.permissions import IsAdminUser, IsAuthenticated
 
-from .models import Order, Product, Collection, OrderItem, Review, Cart, CartItem, Customer
-from .serializers import CreateOrderSerializer, CustomerSerializer, OrderSerializer, ProductSerializer, CollectionSerializer, ReviewSerializer, CartSerializer, CartItemSerializer, AddCartItemSerializer, UpdateCartItemSerializer, UpdateOrderSerializer
+from .models import Order, Product, Collection, OrderItem, ProductImage, Review, Cart, CartItem, Customer
+from .serializers import CreateOrderSerializer, CustomerSerializer, OrderSerializer, ProductImageSerializer, ProductSerializer, CollectionSerializer, ReviewSerializer, CartSerializer, CartItemSerializer, AddCartItemSerializer, UpdateCartItemSerializer, UpdateOrderSerializer
 from .filters import ProductFilter
 from .pagination import CustomPagination
 from .permissions import IsAdminOrReadOnly
@@ -50,6 +50,20 @@ class ProductViewSet(ModelViewSet):
             return Response({"error": "Order items are related to this product"},
                             status=status.HTTP_405_METHOD_NOT_ALLOWED)
         return super().destroy(request, *args, **kwargs)
+
+
+class ProductImageViewSet(ModelViewSet):
+    serializer_class = ProductImageSerializer
+
+    def get_queryset(self):
+        return ProductImage.objects.filter(
+            product_id=self.kwargs['product_pk']
+        )
+
+    def get_serializer_context(self):
+        return {
+            'product_id': self.kwargs['product_pk']
+        }
 
 
 class ReviewViewset(ModelViewSet):
