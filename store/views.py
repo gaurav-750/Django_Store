@@ -20,7 +20,7 @@ from .permissions import IsAdminOrReadOnly
 
 class ProductViewSet(ModelViewSet):
     permission_classes = [IsAdminOrReadOnly]
-    queryset = Product.objects.all()
+    queryset = Product.objects.prefetch_related('images').all()
     # def get_queryset(self):
     #     queryset = Product.objects.all()
     #     collection_id = self.request.query_params.get('collection_id')
