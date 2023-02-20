@@ -4,9 +4,10 @@ from django.conf import settings
 
 from uuid import uuid4
 
+from .validators import validate_file_size
+
+
 # Create your models here.
-
-
 class Collection(models.Model):
     title = models.CharField(max_length=255)
     featured_product = models.ForeignKey(
@@ -48,7 +49,9 @@ class Product(models.Model):
 class ProductImage(models.Model):
     product = models.ForeignKey(
         Product, on_delete=models.CASCADE, related_name='images')
-    image = models.ImageField(upload_to='store/images')
+    image = models.ImageField(upload_to='store/images',
+                              validators=[validate_file_size]
+                              )
     # image will be stored in /media/store/images/
 
 
