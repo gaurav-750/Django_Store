@@ -178,9 +178,14 @@ def say_hello(req):
 
         # message.attach_file('playground/static/images/dog.jpg')
         # message.send()
-        message = BaseEmailMessage(template_name='emails/hello.html',
-                                   context={'name': 'Gaurav'})
-        message.send(to=['jonnyroy789@gmail.com'])
+        # message = BaseEmailMessage(template_name='emails/hello.html',
+        #                            context={'name': 'Gaurav'})
+        # message.send(to=['jonnyroy789@gmail.com'])
+
+        send_mail('Email Test', 'This is a dummy message of Django',
+                  'gauravsomani52750@gmail.com', ['jonnyroy789@gmail.com'],
+                  fail_silently=False)
+
     except BadHeaderError:
         pass
 
