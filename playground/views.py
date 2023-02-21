@@ -11,6 +11,8 @@ from store.models import Product, Customer, Collection, Order, OrderItem
 
 from templated_mail.mail import BaseEmailMessage
 
+from .tasks import notify_customers
+
 # Create your views here.
 
 
@@ -169,25 +171,29 @@ def say_hello(req):
     #     print('row', queryset)
 
     # todo SENDING MAILS:
-    try:
-        # send_mail('subject', 'message', 'gauravsomani52750@gmail.com',
-        #   ['jonnyroy789@gmail.com'])
+    # try:
+    # send_mail('subject', 'message', 'gauravsomani52750@gmail.com',
+    #   ['jonnyroy789@gmail.com'])
 
-        # message = EmailMessage('subject', 'message of the email..', 'gauravsomani52750@gmail.com',
-        #                        ['jonnyroy789@gmail.com'])
+    # message = EmailMessage('subject', 'message of the email..', 'gauravsomani52750@gmail.com',
+    #                        ['jonnyroy789@gmail.com'])
 
-        # message.attach_file('playground/static/images/dog.jpg')
-        # message.send()
-        # message = BaseEmailMessage(template_name='emails/hello.html',
-        #                            context={'name': 'Gaurav'})
-        # message.send(to=['jonnyroy789@gmail.com'])
+    # message.attach_file('playground/static/images/dog.jpg')
+    # message.send()
+    # message = BaseEmailMessage(template_name='emails/hello.html',
+    #                            context={'name': 'Gaurav'})
+    # message.send(to=['jonnyroy789@gmail.com'])
 
-        send_mail('Email Test', 'This is a dummy message of Django',
-                  'gauravsomani52750@gmail.com', ['jonnyroy789@gmail.com'],
-                  fail_silently=False)
+    # send_mail('Email Test', 'This is a dummy message of Django',
+    #           'gauravsomani52750@gmail.com', ['jonnyroy789@gmail.com'],
+    #           fail_silently=False)
+    # print('email sent')
 
-    except BadHeaderError:
-        pass
+    # except BadHeaderError:
+    # pass
 
+    print('🛑🛑')
+    # notify_customers('Hello')
+    notify_customers.delay('Hello!')
     # return render(req, 'hello.html', {'name': 'Gaurav', 'result': list(queryset)})
     return render(req, 'hello.html', {'name': 'Gaurav'})
