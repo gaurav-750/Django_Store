@@ -5,6 +5,7 @@ from django.db.models import Q, F, Value, Func, ExpressionWrapper, DecimalField
 from django.db.models.aggregates import Count, Max, Min, Avg, Sum
 from django.db.models.functions import Concat
 from django.db import connection
+from django.core.mail import send_mail, mail_admins, BadHeaderError
 
 from store.models import Product, Customer, Collection, Order, OrderItem
 
@@ -160,9 +161,17 @@ def say_hello(req):
     # cursor.execute('select * from store_product')
     # cursor.close()
 
-    with connection.cursor() as cursor:
-        cursor.execute("select * from store_product")
-        queryset = cursor.fetchmany(5)
-        print('row', queryset)
+    # with connection.cursor() as cursor:
+    #     cursor.execute("select * from store_product")
+    #     queryset = cursor.fetchmany(5)
+    #     print('row', queryset)
 
-    return render(req, 'hello.html', {'name': 'Gaurav', 'result': list(queryset)})
+    # todo SENDING MAILS:
+    try:
+        send_mail('subject', 'message', 'gauravsomani52750@gmail.com',
+                  ['jonnyroy789@gmail.com'])
+    except BadHeaderError:
+        pass
+
+    # return render(req, 'hello.html', {'name': 'Gaurav', 'result': list(queryset)})
+    return render(req, 'hello.html', {'name': 'Gaurav'})
