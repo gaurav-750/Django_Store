@@ -5,7 +5,7 @@ from django.db.models import Q, F, Value, Func, ExpressionWrapper, DecimalField
 from django.db.models.aggregates import Count, Max, Min, Avg, Sum
 from django.db.models.functions import Concat
 from django.db import connection
-from django.core.mail import send_mail, mail_admins, BadHeaderError
+from django.core.mail import send_mail, mail_admins, BadHeaderError, EmailMessage
 
 from store.models import Product, Customer, Collection, Order, OrderItem
 
@@ -168,8 +168,14 @@ def say_hello(req):
 
     # todo SENDING MAILS:
     try:
-        send_mail('subject', 'message', 'gauravsomani52750@gmail.com',
-                  ['jonnyroy789@gmail.com'])
+        # send_mail('subject', 'message', 'gauravsomani52750@gmail.com',
+        #   ['jonnyroy789@gmail.com'])
+
+        message = EmailMessage('subject', 'message of the email..', 'gauravsomani52750@gmail.com',
+                               ['jonnyroy789@gmail.com'])
+
+        message.attach_file('playground/static/images/dog.jpg')
+        message.send()
     except BadHeaderError:
         pass
 
