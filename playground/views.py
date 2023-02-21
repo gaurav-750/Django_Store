@@ -9,6 +9,8 @@ from django.core.mail import send_mail, mail_admins, BadHeaderError, EmailMessag
 
 from store.models import Product, Customer, Collection, Order, OrderItem
 
+from templated_mail.mail import BaseEmailMessage
+
 # Create your views here.
 
 
@@ -171,11 +173,14 @@ def say_hello(req):
         # send_mail('subject', 'message', 'gauravsomani52750@gmail.com',
         #   ['jonnyroy789@gmail.com'])
 
-        message = EmailMessage('subject', 'message of the email..', 'gauravsomani52750@gmail.com',
-                               ['jonnyroy789@gmail.com'])
+        # message = EmailMessage('subject', 'message of the email..', 'gauravsomani52750@gmail.com',
+        #                        ['jonnyroy789@gmail.com'])
 
-        message.attach_file('playground/static/images/dog.jpg')
-        message.send()
+        # message.attach_file('playground/static/images/dog.jpg')
+        # message.send()
+        message = BaseEmailMessage(template_name='emails/hello.html',
+                                   context={'name': 'Gaurav'})
+        message.send(to=['jonnyroy789@gmail.com'])
     except BadHeaderError:
         pass
 
