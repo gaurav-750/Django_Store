@@ -15,6 +15,8 @@ from pathlib import Path
 import os
 import environ
 
+from celery.schedules import crontab
+
 # Initialise environment variables
 env = environ.Env()
 environ.Env.read_env()
@@ -205,3 +207,11 @@ EMAIL_USE_TLS = True
 
 
 CELERY_BROKER_URL = 'redis://localhost:6379/1'
+CELERY_BEAT_SCHEDULE = {
+    'notify_customers': {
+        'task': 'playground.tasks.notify_customers',
+        'schedule': 20,  # every 5 sec / 15*60 (15 mins)
+        # 'schedule': crontab(day_of_week=1, hour=7, minute=30), #every Monday 7.30am
+        'args': ['Test Message'],
+    }
+}
