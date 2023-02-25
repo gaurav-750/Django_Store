@@ -6,16 +6,21 @@ from django.db.models.aggregates import Count, Max, Min, Avg, Sum
 from django.db.models.functions import Concat
 from django.db import connection
 from django.core.mail import send_mail, mail_admins, BadHeaderError, EmailMessage
+from django.core.cache import cache
+from django.views.decorators.cache import cache_page
+from django.utils.decorators import method_decorator
 
+from rest_framework.views import APIView
 from store.models import Product, Customer, Collection, Order, OrderItem
 
 from templated_mail.mail import BaseEmailMessage
 
 from .tasks import notify_customers
 import requests
-# Create your views here.
 
 
+# Create your views here:
+@cache_page(5*60)
 def say_hello(req):
 
     # query_set = Product.objects.filter(pk=0).first()
@@ -196,5 +201,24 @@ def say_hello(req):
     # notify_customers('Hello')
     # notify_customers.delay('Hello!')
     # return render(req, 'hello.html', {'name': 'Gaurav', 'result': list(queryset)})
-    requests.get('https://httpbin.org/delay/2')
-    return render(req, 'hello.html', {'name': 'Gaurav'})
+
+    key = 'httpbin_result'
+    # *1st we'll check if we have the data in the cache, if not then we'll serve it by calling the api
+    # if cache.get(key) is None:
+    #     print('🛑🛑', 'if')
+
+    #     res = requests.get('https://httpbin.org/delay/2')
+    #     data = res.json()
+    #     cache.set(key, data)
+
+    res = requests.get('https://httpbin.org/delay/2')
+    data = res.json()
+    return render(req, 'hello.html', {'name': 'data'})
+
+
+class HelloView(APIView):
+    @method_decorator(cache_page(5*60))
+    def get(self, request):
+        res = requests.get('https://httpbin.org/delay/2')
+        data = res.json()
+        return render(request, 'hello.html', {'name': data})
