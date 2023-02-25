@@ -12,7 +12,7 @@ from store.models import Product, Customer, Collection, Order, OrderItem
 from templated_mail.mail import BaseEmailMessage
 
 from .tasks import notify_customers
-
+import requests
 # Create your views here.
 
 
@@ -192,8 +192,9 @@ def say_hello(req):
     # except BadHeaderError:
     # pass
 
-    print('🛑🛑')
+    # print('🛑🛑')
     # notify_customers('Hello')
-    notify_customers.delay('Hello!')
+    # notify_customers.delay('Hello!')
     # return render(req, 'hello.html', {'name': 'Gaurav', 'result': list(queryset)})
+    requests.get('https://httpbin.org/delay/2')
     return render(req, 'hello.html', {'name': 'Gaurav'})

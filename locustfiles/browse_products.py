@@ -6,6 +6,13 @@ class WebsiteUser(HttpUser):
     # locust will randomly wait between 1 to 5 secs between each task
     wait_time = between(1, 5)
 
+    @task
+    def say_hello(self):
+        self.client.get(
+            '/playground/hello/',
+            name='hello'
+        )
+
     # viewing products
     @task(2)  # weight -> kitni chances hai ye endpt.pe user jane k
     def view_products(self):
