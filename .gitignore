@@ -1,2 +1,4 @@
-media/
 store_project/.env
+
+/media/
+/static/
