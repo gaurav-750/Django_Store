@@ -23,6 +23,7 @@ django-redis = "*"
 whitenoise = "*"
 gunicorn = "*"
 dj-database-url = "*"
+mysql-connector-python = "*"
 
 [dev-packages]
 autopep8 = "*"
