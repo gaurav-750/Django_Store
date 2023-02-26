@@ -14,6 +14,7 @@ from datetime import timedelta
 from pathlib import Path
 import os
 import environ
+import dj_database_url
 
 from celery.schedules import crontab
 
@@ -30,6 +31,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = env('SECRET_KEY')
+DATABASE_URL = os.getenv('DATABASE_URL')
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = False
@@ -115,13 +117,7 @@ WSGI_APPLICATION = 'store_project.wsgi.application'
 # https://docs.djangoproject.com/en/4.1/ref/settings/#databases
 
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'storefront3',
-        'HOST': 'localhost',
-        'USER': 'root',
-        'PASSWORD': 'pass123'
-    }
+    'default': dj_database_url.config(default=DATABASE_URL)
 }
 
 
