@@ -51,7 +51,6 @@ INSTALLED_APPS = [
     'corsheaders',
     'rest_framework',
     'djoser',
-    'silk',
     'debug_toolbar',
     'django_filters',
 
@@ -61,6 +60,7 @@ INSTALLED_APPS = [
     'tags',
     'core',
 ]
+
 
 MIDDLEWARE = [
     "corsheaders.middleware.CorsMiddleware",
